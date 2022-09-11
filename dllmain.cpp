@@ -63,22 +63,12 @@ void* copy_function( void* function_address )
 	{
 		if( *it == 0xE9 || *it == 0xE8 )
 		{
-			// getting the offset of bytes from the beginning of the function 
-			// so we can add it later to get the next instruction address
-			// of both the original function and our new function.
-
 			const auto dist = std::distance( function_instrs.begin( ), it );
-			// old offset used by the old function to make a relative CALL or JMP  
 			const auto o_rel_offset = *reinterpret_cast< std::uint32_t* >( it._Ptr + 1 );
-			// the address of the instruction after the relative CALL instruction 
 			const auto o_next_instr = reinterpret_cast< std::uint32_t >( function_address ) + dist + 5;
-			// absolute address of the callee
 			const auto callee_abs_address = o_next_instr + o_rel_offset;
-			// same as before except it's the next instruction of the new function
 			const auto next_instr = reinterpret_cast< std::uint32_t >( allocated_func_mem ) + dist + 5;
-			// relative address calculation
 			const auto rel_addr = callee_abs_address - next_instr;
-			// setting the new relative address operand value
 			*reinterpret_cast< std::uint32_t* >( it._Ptr + 1 ) = rel_addr;
 		}
 	}
