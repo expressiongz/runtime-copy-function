@@ -88,7 +88,7 @@ void main_thread( HMODULE dll_module )
 	try {
 		 new_func_address = copy_function( reinterpret_cast< void* >( base + function_rva ) );
 	} catch (const std::runtime_error& e) {
-		std::printf( "Failed to copy function!" );
+		std::cout << e.what();
 		FreeLibrary( dll_module );
 	}
 	const auto new_func = static_cast< void( __cdecl * )( const char* ) >( new_func_address );
