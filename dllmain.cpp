@@ -83,8 +83,14 @@ void main_thread( HMODULE dll_module )
 {
 	const auto base = reinterpret_cast< std::uint32_t >( GetModuleHandleA( nullptr ) );
 	constexpr auto function_rva = 0xDEADBEEF;
+	void* new_func_address{ nullptr };
 	// Imagine we are copying a function which takes a c-string as a parameter.
-	const auto new_func_address = copy_function( reinterpret_cast< void* >( base + function_rva ) );
+	try {
+		 new_func_address = copy_function( reinterpret_cast< void* >( base + function_rva ) );
+	} catch (const std::runtime_error& e) {
+		std::printf( "Failed to copy function!" );
+		FreeLibrary( dll_module );
+	}
 	const auto new_func = static_cast< void( __cdecl * )( const char* ) >( new_func_address );
 	std::printf( "%p\n", new_func );
 	new_func( "exprssn is godly\n" );
